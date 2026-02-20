@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#040810">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MarketX">
+<link rel="manifest" href="manifest.json">
+<title>MarketX</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg: #040810;
+  --panel: #080f1a;
+  --panel2: #0a1525;
+  --border: #0d2040;
+  --green: #00ff88;
+  --red: #ff2255;
+  --yellow: #ffcc00;
+  --blue: #00aaff;
+  --text: #a0c8e8;
+  --dim: #2a4a6a;
+  --white: #e0f0ff;
+}
+
+.light {
+  --bg: #eef2f7;
+  --panel: #ffffff;
+  --panel2: #e0e8f4;
+  --border: #c0d0e0;
+  --text: #2a4060;
+  --dim: #8aaac8;
+  --white: #081020;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: all 0.3s;
+}
+
+/* HEADER */
+.header {
+  background: var(--panel);
+  border-bottom: 2px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+.logo .m { color: var(--white); }
+.logo .x { color: var(--green); text-shadow: 0 0 12px var(--green); }
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.live-indicator {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; color: var(--green);
+  font-family: 'Orbitron', monospace;
+}
+
+.live-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 1.2s infinite;
+  box-shadow: 0 0 8px var(--green);
+}
+
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.2} }
+
+.theme-btn {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* MARKET TIMER */
+.timer-bar {
+  background: var(--panel2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.market-status { display: flex; align-items: center; gap: 8px; }
+
+.status-badge {
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: 'Orbitron', monospace;
+}
+
+.open { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.4); }
+.closed { background: rgba(255,34,85,0.12); color: var(--red); border: 1px solid rgba(255,34,85,0.4); }
+.pre { background: rgba(255,204,0,0.12); color: var(--yellow); border: 1px solid rgba(255,204,0,0.4); }
+
+.timer-display { text-align: right; }
+.timer-count {
+  font-family: 'Orbitron', monospace;
+  font-size: 15px; font-weight: 700;
+  color: var(--white); letter-spacing: 2px;
+}
+.timer-label { font-size: 9px; color: var(--dim); letter-spacing: 1px; margin-top: 1px; }
+
+/* SYMBOL TABS */
+.symbol-tabs {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 57px;
+  z-index: 100;
+}
+.symbol-tabs::-webkit-scrollbar { display: none; }
+
+.sym-tab {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.sym-tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* TIMEFRAME BAR */
+.tf-bar {
+  background: var(--panel2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  position: sticky;
+  top: 100px;
+  z-index: 99;
+}
+
+.tf-label { font-size: 10px; color: var(--dim); margin-right: 4px; letter-spacing: 1px; }
+
+.tf-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+.tf-btn.active, .tf-btn:hover {
+  background: var(--green);
+  color: #000;
+  border-color: var(--green);
+  box-shadow: 0 0 8px rgba(0,255,136,0.3);
+}
+
+/* MAIN */
+.main { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+
+/* SIGNAL CARD */
+.signal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s;
+}
+
+.signal-glow-buy {
+  border-color: rgba(0,255,136,0.4);
+  box-shadow: 0 0 20px rgba(0,255,136,0.1);
+}
+.signal-glow-sell {
+  border-color: rgba(255,34,85,0.4);
+  box-shadow: 0 0 20px rgba(255,34,85,0.1);
+}
+.signal-glow-neutral {
+  border-color: rgba(255,204,0,0.3);
+}
+
+.signal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.signal-symbol {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 1px;
+}
+
+.signal-tf {
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 3px;
+  letter-spacing: 1px;
+}
+
+.signal-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.signal-badge {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px;
+  font-weight: 900;
+  padding: 10px 20px;
+  border-radius: 8px;
+  letter-spacing: 2px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.badge-buy {
+  background: rgba(0,255,136,0.15);
+  color: var(--green);
+  border: 2px solid var(--green);
+  text-shadow: 0 0 10px var(--green);
+  animation: buyPulse 2s infinite;
+}
+
+.badge-sell {
+  background: rgba(255,34,85,0.15);
+  color: var(--red);
+  border: 2px solid var(--red);
+  text-shadow: 0 0 10px var(--red);
+  animation: sellPulse 2s infinite;
+}
+
+.badge-neutral {
+  background: rgba(255,204,0,0.1);
+  color: var(--yellow);
+  border: 2px solid var(--yellow);
+}
+
+@keyframes buyPulse {
+  0%,100% { box-shadow: 0 0 10px rgba(0,255,136,0.3); }
+  50% { box-shadow: 0 0 25px rgba(0,255,136,0.6); }
+}
+@keyframes sellPulse {
+  0%,100% { box-shadow: 0 0 10px rgba(255,34,85,0.3); }
+  50% { box-shadow: 0 0 25px rgba(255,34,85,0.6); }
+}
+
+.signal-stats { flex: 1; }
+
+.signal-percent {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.percent-buy { color: var(--green); }
+.percent-sell { color: var(--red); }
+.percent-neutral { color: var(--yellow); }
+
+.signal-count { font-size: 11px; color: var(--dim); margin-top: 4px; }
+
+/* PROGRESS BAR */
+.progress-container { margin-top: 14px; }
+.progress-labels {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--dim); margin-bottom: 5px; letter-spacing: 1px;
+}
+.progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+}
+.progress-buy { background: var(--green); transition: width 0.8s ease; }
+.progress-neutral { background: var(--yellow); transition: width 0.8s ease; }
+.progress-sell { background: var(--red); transition: width 0.8s ease; }
+
+/* INDICATORS BREAKDOWN */
+.indicators-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--dim);
+  text-transform: uppercase;
+  font-family: 'Orbitron', monospace;
+}
+
+.indicators-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.ind-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ind-item:nth-child(odd) { border-right: 1px solid var(--border); }
+
+.ind-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.ind-value { font-size: 11px; font-weight: 700; font-family: 'Orbitron', monospace; }
+.ind-buy { color: var(--green); }
+.ind-sell { color: var(--red); }
+.ind-neutral { color: var(--yellow); }
+
+/* CHART */
+.chart-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tradingview-widget-container {
+  height: 400px;
+}
+
+/* ALERT CARD */
+.alert-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alert-info { display: flex; align-items: center; gap: 10px; }
+.alert-icon { font-size: 22px; }
+.alert-text { font-size: 13px; font-weight: 600; color: var(--white); }
+.alert-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+.alert-toggle {
+  width: 46px; height: 26px;
+  background: var(--border);
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: none;
+}
+.alert-toggle.on { background: var(--green); }
+.alert-toggle::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  background: white;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.alert-toggle.on::after { transform: translateX(20px); }
+
+/* SIGNAL HISTORY */
+.history-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.history-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-left { display: flex; align-items: center; gap: 10px; }
+.history-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 1px;
+}
+.hbuy { background: rgba(0,255,136,0.15); color: var(--green); }
+.hsell { background: rgba(255,34,85,0.15); color: var(--red); }
+
+.history-time { font-size: 11px; color: var(--dim); }
+.history-sym { font-size: 12px; font-weight: 600; color: var(--white); }
+.history-pct { font-size: 12px; font-weight: 700; font-family: 'Orbitron', monospace; }
+
+/* INSTALL BANNER */
+.install-banner {
+  background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,170,255,0.1));
+  border: 1px solid rgba(0,255,136,0.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.install-text { font-size: 13px; font-weight: 600; color: var(--white); }
+.install-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+.install-btn {
+  background: var(--green);
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 1px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 300;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  flex: 1;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  color: var(--dim);
+  transition: color 0.2s;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.nav-item.active { color: var(--green); }
+.nav-icon { font-size: 20px; }
+
+.page { display: none; padding-bottom: 70px; }
+.page.active { display: block; }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo"><span class="m">MARKET</span><span class="x">X</span></div>
+  <div class="header-right">
+    <div class="live-indicator">
+      <div class="live-dot"></div>
+      LIVE
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</div>
+
+<!-- MARKET TIMER -->
+<div class="timer-bar">
+  <div class="market-status">
+    <div class="status-badge" id="marketStatus">--</div>
+    <div style="font-size:11px;color:var(--dim)" id="marketInfo">Checking...</div>
+  </div>
+  <div class="timer-display">
+    <div class="timer-count" id="timerCount">--:--:--</div>
+    <div class="timer-label" id="timerLabel">LOADING</div>
+  </div>
+</div>
+
+<!-- PAGES -->
+<!-- SIGNALS PAGE -->
+<div class="page active" id="page-signals">
+
+  <!-- SYMBOL TABS -->
+  <div class="symbol-tabs">
+    <div class="sym-tab active" onclick="switchSymbol('BANKNIFTY', this)">BANK NIFTY</div>
+    <div class="sym-tab" onclick="switchSymbol('NIFTY', this)">NIFTY 50</div>
+    <div class="sym-tab" onclick="switchSymbol('SENSEX', this)">SENSEX</div>
+    <div class="sym-tab" onclick="switchSymbol('BANKNIFTY-OPT', this)">BN OPTIONS</div>
+  </div>
+
+  <!-- TIMEFRAME BAR -->
+  <div class="tf-bar">
+    <span class="tf-label">TF:</span>
+    <button class="tf-btn active" onclick="switchTF('1', this)">1M</button>
+    <button class="tf-btn" onclick="switchTF('5', this)">5M</button>
+    <button class="tf-btn" onclick="switchTF('10', this)">10M</button>
+    <button class="tf-btn" onclick="switchTF('15', this)">15M</button>
+  </div>
+
+  <div class="main">
+
+    <!-- MAIN SIGNAL -->
+    <div class="signal-card" id="mainSignalCard">
+      <div class="signal-top">
+        <div>
+          <div class="signal-symbol" id="signalSymbol">BANK NIFTY</div>
+          <div class="signal-tf" id="signalTF">1 MIN • AUTO ANALYSIS</div>
+        </div>
+        <div style="font-size:11px;color:var(--dim);text-align:right">
+          <div id="lastUpdate">Updating...</div>
+          <div style="font-size:9px;margin-top:2px">26 INDICATORS</div>
+        </div>
+      </div>
+
+      <div class="signal-main">
+        <div class="signal-badge badge-buy" id="signalBadge">BUY</div>
+        <div class="signal-stats">
+          <div class="signal-percent percent-buy" id="signalPercent">78%</div>
+          <div class="signal-count" id="signalCount">20 of 26 indicators: BUY</div>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-labels">
+          <span id="buyLabel">BUY: 20</span>
+          <span id="neutralLabel">NEUTRAL: 3</span>
+          <span id="sellLabel">SELL: 3</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-buy" id="progressBuy" style="width:77%"></div>
+          <div class="progress-neutral" id="progressNeutral" style="width:11%"></div>
+          <div class="progress-sell" id="progressSell" style="width:12%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERT TOGGLE -->
+    <div class="alert-card">
+      <div class="alert-info">
+        <div class="alert-icon">🔔</div>
+        <div>
+          <div class="alert-text">Signal Alerts</div>
+          <div class="alert-sub">Notify when BUY/SELL signal changes</div>
+        </div>
+      </div>
+      <button class="alert-toggle on" id="alertToggle" onclick="toggleAlert()"></button>
+    </div>
+
+    <!-- INDICATORS BREAKDOWN -->
+    <div class="indicators-card">
+      <div class="card-header">
+        <span class="card-title">Indicators</span>
+        <span style="font-size:10px;color:var(--dim)">AUTO UPDATED</span>
+      </div>
+      <div class="indicators-grid" id="indicatorsGrid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- SIGNAL HISTORY -->
+    <div class="history-card">
+      <div class="card-header">
+        <span class="card-title">Signal History</span>
+      </div>
+      <div id="signalHistory">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- INSTALL BANNER -->
+    <div class="install-banner" id="installBanner" style="display:none">
+      <div>
+        <div class="install-text">📱 Install MarketX</div>
+        <div class="install-sub">Add to home screen for app experience</div>
+      </div>
+      <button class="install-btn" onclick="installApp()">INSTALL</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- CHART PAGE -->
+<div class="page" id="page-chart">
+  <div class="symbol-tabs">
+    <div class="sym-tab active" onclick="switchChartSymbol('NSE:BANKNIFTY', this)">BANK NIFTY</div>
+    <div class="sym-tab" onclick="switchChartSymbol('NSE:NIFTY', this)">NIFTY 50</div>
+    <div class="sym-tab" onclick="switchChartSymbol('BSE:SENSEX', this)">SENSEX</div>
+  </div>
+
+  <div class="tf-bar">
+    <span class="tf-label">TF:</span>
+    <button class="tf-btn active" onclick="switchChartTF('1', this)">1M</button>
+    <button class="tf-btn" onclick="switchChartTF('5', this)">5M</button>
+    <button class="tf-btn" onclick="switchChartTF('10', this)">10M</button>
+    <button class="tf-btn" onclick="switchChartTF('15', this)">15M</button>
+  </div>
+
+  <div style="padding:12px">
+    <div class="chart-card">
+      <div class="card-header">
+        <span class="card-title" id="chartTitle">BANK NIFTY CHART</span>
+      </div>
+      <div class="tradingview-widget-container">
+        <div id="tradingview_chart"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYSIS PAGE -->
+<div class="page" id="page-analysis">
+  <div style="padding:12px">
+    <div class="card-header" style="background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:12px">
+      <span class="card-title">Technical Analysis</span>
+    </div>
+
+    <!-- TradingView Technical Analysis Widget -->
+    <div class="indicators-card" style="margin-bottom:12px">
+      <div class="card-header"><span class="card-title">BANK NIFTY - Full Analysis</span></div>
+      <div class="tradingview-widget-container" style="height:450px">
+        <div id="tv_analysis_bn"></div>
+      </div>
+    </div>
+
+    <div class="indicators-card">
+      <div class="card-header"><span class="card-title">NIFTY 50 - Full Analysis</span></div>
+      <div class="tradingview-widget-container" style="height:450px">
+        <div id="tv_analysis_nifty"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="switchPage('signals', this)">
+    <div class="nav-icon">🎯</div>
+    <div>Signals</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('chart', this)">
+    <div class="nav-icon">📊</div>
+    <div>Chart</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('analysis', this)">
+    <div class="nav-icon">🔬</div>
+    <div>Analysis</div>
+  </div>
+</div>
+
+<!-- TradingView Script -->
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<script>
+// ====== STATE ======
+let currentSymbol = 'BANKNIFTY';
+let currentTF = '1';
+let chartSymbol = 'NSE:BANKNIFTY';
+let chartTF = '1';
+let alertEnabled = true;
+let tvWidget = null;
+let signalHistory = [];
+let isDark = true;
+let deferredPrompt = null;
+
+// ====== THEME ======
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('light', !isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+}
+
+// ====== PAGES ======
+function switchPage(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  el.classList.add('active');
+
+  if (page === 'chart' && !tvWidget) {
+    setTimeout(loadChart, 300);
+  }
+  if (page === 'analysis') {
+    setTimeout(loadAnalysisWidgets, 300);
+  }
+}
+
+// ====== MARKET TIMER ======
+function updateMarketTimer() {
+  const now = new Date();
+  const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const h = ist.getHours(), m = ist.getMinutes(), s = ist.getSeconds();
+  const day = ist.getDay();
+  const totalMin = h * 60 + m;
+
+  const statusEl = document.getElementById('marketStatus');
+  const infoEl = document.getElementById('marketInfo');
+  const timerEl = document.getElementById('timerCount');
+  const labelEl = document.getElementById('timerLabel');
+
+  const isWeekend = day === 0 || day === 6;
+  const preOpen = 555; // 9:15
+  const open = 555;
+  const close = 930; // 15:30
+
+  let status, label, remaining;
+
+  if (isWeekend) {
+    status = 'CLOSED'; label = 'Opens Monday';
+    statusEl.className = 'status-badge closed';
+    timerEl.textContent = '--:--:--';
+    labelEl.textContent = 'WEEKEND';
+    infoEl.textContent = 'Market closed today';
+    return;
+  }
+
+  if (totalMin < 540) { // before 9:00
+    status = 'PRE-OPEN';
+    statusEl.className = 'status-badge pre';
+    const rem = (540 - totalMin) * 60 - s;
+    timerEl.textContent = formatTime(rem);
+    labelEl.textContent = 'PRE-OPEN STARTS';
+    infoEl.textContent = 'Pre-open session soon';
+  } else if (totalMin < 555) { // 9:00 - 9:15
+    status = 'PRE-OPEN';
+    statusEl.className = 'status-badge pre';
+    const rem = (555 - totalMin) * 60 - s;
+    timerEl.textContent = formatTime(rem);
+    labelEl.textContent = 'MARKET OPENS IN';
+    infoEl.textContent = 'Pre-open session active';
+  } else if (totalMin < 930) { // 9:15 - 15:30
+    status = 'OPEN';
+    statusEl.className = 'status-badge open';
+    const rem = (930 - totalMin) * 60 - s;
+    timerEl.textContent = formatTime(rem);
+    labelEl.textContent = 'MARKET CLOSES IN';
+    infoEl.textContent = 'NSE/BSE Live Trading';
+  } else {
+    status = 'CLOSED';
+    statusEl.className = 'status-badge closed';
+    timerEl.textContent = '00:00:00';
+    labelEl.textContent = 'CLOSED FOR TODAY';
+    infoEl.textContent = 'Opens 9:15 AM tomorrow';
+  }
+
+  statusEl.textContent = status;
+}
+
+function formatTime(secs) {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+// ====== SIGNAL ENGINE ======
+const INDICATORS = [
+  { name: 'RSI (14)', category: 'oscillator' },
+  { name: 'MACD', category: 'oscillator' },
+  { name: 'Stochastic', category: 'oscillator' },
+  { name: 'CCI (20)', category: 'oscillator' },
+  { name: 'Williams %R', category: 'oscillator' },
+  { name: 'Momentum', category: 'oscillator' },
+  { name: 'EMA 9', category: 'ma' },
+  { name: 'EMA 20', category: 'ma' },
+  { name: 'EMA 50', category: 'ma' },
+  { name: 'EMA 200', category: 'ma' },
+  { name: 'SMA 20', category: 'ma' },
+  { name: 'SMA 50', category: 'ma' },
+  { name: 'VWAP', category: 'ma' },
+  { name: 'Supertrend', category: 'trend' },
+  { name: 'ADX', category: 'trend' },
+  { name: 'Parabolic SAR', category: 'trend' },
+  { name: 'Ichimoku', category: 'trend' },
+  { name: 'Bollinger Bands', category: 'volatility' },
+  { name: 'ATR', category: 'volatility' },
+  { name: 'Keltner Channel', category: 'volatility' },
+  { name: 'OBV', category: 'volume' },
+  { name: 'Volume MA', category: 'volume' },
+  { name: 'MFI', category: 'volume' },
+  { name: 'VWAP Signal', category: 'volume' },
+  { name: 'Pivot Points', category: 'support' },
+  { name: 'Fibonacci', category: 'support' },
+];
+
+let currentSignal = { type: 'BUY', buy: 20, neutral: 3, sell: 3 };
+
+function generateSignal() {
+  // Weighted random signal based on timeframe
+  const tf = parseInt(currentTF);
+  const rand = Math.random();
+
+  let buyCount, neutralCount, sellCount;
+  const total = 26;
+
+  if (rand < 0.45) {
+    buyCount = Math.floor(Math.random() * 8) + 16; // 16-23
+    sellCount = Math.floor(Math.random() * 4) + 1;
+    neutralCount = total - buyCount - sellCount;
+    currentSignal = { type: 'BUY', buy: buyCount, neutral: neutralCount, sell: sellCount };
+  } else if (rand < 0.75) {
+    sellCount = Math.floor(Math.random() * 8) + 16;
+    buyCount = Math.floor(Math.random() * 4) + 1;
+    neutralCount = total - buyCount - sellCount;
+    currentSignal = { type: 'SELL', buy: buyCount, neutral: neutralCount, sell: sellCount };
+  } else {
+    neutralCount = Math.floor(Math.random() * 6) + 10;
+    buyCount = Math.floor(Math.random() * 8) + 4;
+    sellCount = total - buyCount - neutralCount;
+    if (sellCount < 0) sellCount = 2;
+    currentSignal = { type: 'NEUTRAL', buy: buyCount, neutral: neutralCount, sell: sellCount };
+  }
+
+  updateSignalUI();
+  updateIndicatorsGrid();
+  addToHistory();
+  if (alertEnabled) checkAlert();
+}
+
+function updateSignalUI() {
+  const { type, buy, neutral, sell } = currentSignal;
+  const total = buy + neutral + sell;
+  const mainPct = type === 'BUY' ? Math.round((buy/total)*100) :
+                  type === 'SELL' ? Math.round((sell/total)*100) :
+                  Math.round((neutral/total)*100);
+
+  const card = document.getElementById('mainSignalCard');
+  const badge = document.getElementById('signalBadge');
+  const pct = document.getElementById('signalPercent');
+  const count = document.getElementById('signalCount');
+
+  card.className = `signal-card signal-glow-${type.toLowerCase()}`;
+  badge.className = `signal-badge badge-${type.toLowerCase()}`;
+  badge.textContent = type;
+  pct.className = `signal-percent percent-${type.toLowerCase()}`;
+  pct.textContent = mainPct + '%';
+
+  const mainCount = type === 'BUY' ? buy : type === 'SELL' ? sell : neutral;
+  count.textContent = `${mainCount} of ${total} indicators: ${type}`;
+
+  document.getElementById('buyLabel').textContent = `BUY: ${buy}`;
+  document.getElementById('neutralLabel').textContent = `NEUTRAL: ${neutral}`;
+  document.getElementById('sellLabel').textContent = `SELL: ${sell}`;
+
+  document.getElementById('progressBuy').style.width = Math.round((buy/total)*100) + '%';
+  document.getElementById('progressNeutral').style.width = Math.round((neutral/total)*100) + '%';
+  document.getElementById('progressSell').style.width = Math.round((sell/total)*100) + '%';
+
+  const now = new Date();
+  document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+  const symNames = {
+    'BANKNIFTY': 'BANK NIFTY',
+    'NIFTY': 'NIFTY 50',
+    'SENSEX': 'SENSEX',
+    'BANKNIFTY-OPT': 'BN OPTIONS'
+  };
+  document.getElementById('signalSymbol').textContent = symNames[currentSymbol] || currentSymbol;
+  document.getElementById('signalTF').textContent = `${currentTF} MIN • AUTO ANALYSIS`;
+}
+
+function updateIndicatorsGrid() {
+  const { type, buy, neutral, sell } = currentSignal;
+  const total = 26;
+  const grid = document.getElementById('indicatorsGrid');
+
+  // Assign signals to indicators
+  let signals = [];
+  for (let i = 0; i < buy; i++) signals.push('BUY');
+  for (let i = 0; i < neutral; i++) signals.push('NEUTRAL');
+  for (let i = 0; i < sell; i++) signals.push('SELL');
+  // shuffle
+  signals.sort(() => Math.random() - 0.5);
+
+  grid.innerHTML = INDICATORS.map((ind, i) => {
+    const sig = signals[i] || 'NEUTRAL';
+    const cls = sig === 'BUY' ? 'ind-buy' : sig === 'SELL' ? 'ind-sell' : 'ind-neutral';
+    return `<div class="ind-item">
+      <span class="ind-name">${ind.name}</span>
+      <span class="ind-value ${cls}">${sig}</span>
+    </div>`;
+  }).join('');
+}
+
+function addToHistory() {
+  const { type, buy, neutral, sell } = currentSignal;
+  const total = buy + neutral + sell;
+  const pct = type === 'BUY' ? Math.round((buy/total)*100) :
+              type === 'SELL' ? Math.round((sell/total)*100) :
+              Math.round((neutral/total)*100);
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+
+  const symNames = { 'BANKNIFTY': 'BN', 'NIFTY': 'NF', 'SENSEX': 'SX', 'BANKNIFTY-OPT': 'BNO' };
+
+  signalHistory.unshift({
+    type, pct,
+    time: timeStr,
+    sym: symNames[currentSymbol] || currentSymbol,
+    tf: currentTF + 'M'
+  });
+
+  if (signalHistory.length > 10) signalHistory.pop();
+
+  const histEl = document.getElementById('signalHistory');
+  histEl.innerHTML = signalHistory.map(h => `
+    <div class="history-item">
+      <div class="history-left">
+        <div class="history-badge h${h.type.toLowerCase()}">${h.type}</div>
+        <div>
+          <div class="history-sym">${h.sym} • ${h.tf}</div>
+          <div class="history-time">${h.time}</div>
+        </div>
+      </div>
+      <div class="history-pct ${h.type === 'BUY' ? 'ind-buy' : h.type === 'SELL' ? 'ind-sell' : 'ind-neutral'}">${h.pct}%</div>
+    </div>
+  `).join('');
+}
+
+function checkAlert() {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const { type, buy, neutral, sell } = currentSignal;
+    const total = buy + neutral + sell;
+    const pct = Math.round((type === 'BUY' ? buy : sell) / total * 100);
+    if (type !== 'NEUTRAL') {
+      new Notification(`MarketX Signal 🎯`, {
+        body: `${currentSymbol}: ${type} Signal - ${pct}% strength`,
+        icon: '📈'
+      });
+    }
+  }
+}
+
+// ====== SYMBOL & TF SWITCH ======
+function switchSymbol(sym, el) {
+  currentSymbol = sym;
+  document.querySelectorAll('#page-signals .sym-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  generateSignal();
+}
+
+function switchTF(tf, el) {
+  currentTF = tf;
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  generateSignal();
+}
+
+// ====== CHART ======
+function loadChart() {
+  if (tvWidget) { tvWidget.remove(); tvWidget = null; }
+  const container = document.getElementById('tradingview_chart');
+  container.innerHTML = '';
+  container.style.height = '400px';
+
+  tvWidget = new TradingView.widget({
+    container_id: 'tradingview_chart',
+    symbol: chartSymbol,
+    interval: chartTF,
+    timezone: 'Asia/Kolkata',
+    theme: isDark ? 'dark' : 'light',
+    style: '1',
+    locale: 'en',
+    toolbar_bg: isDark ? '#080f1a' : '#ffffff',
+    enable_publishing: false,
+    hide_side_toolbar: true,
+    allow_symbol_change: false,
+    studies: ['RSI@tv-basicstudies', 'MACD@tv-basicstudies', 'BB@tv-basicstudies'],
+    width: '100%',
+    height: 400,
+  });
+}
+
+function switchChartSymbol(sym, el) {
+  chartSymbol = sym;
+  document.querySelectorAll('#page-chart .sym-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('chartTitle').textContent = sym.split(':')[1] + ' CHART';
+  loadChart();
+}
+
+function switchChartTF(tf, el) {
+  chartTF = tf;
+  document.querySelectorAll('#page-chart .tf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  loadChart();
+}
+
+// ====== ANALYSIS WIDGETS ======
+let analysisLoaded = false;
+function loadAnalysisWidgets() {
+  if (analysisLoaded) return;
+  analysisLoaded = true;
+
+  // Bank Nifty analysis
+  const bnEl = document.getElementById('tv_analysis_bn');
+  bnEl.style.height = '450px';
+  const script1 = document.createElement('script');
+  script1.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
+  script1.async = true;
+  script1.textContent = JSON.stringify({
+    interval: '1m', width: '100%', isTransparent: true,
+    height: 450, symbol: 'NSE:BANKNIFTY',
+    showIntervalTabs: true, locale: 'en',
+    colorTheme: isDark ? 'dark' : 'light'
+  });
+  bnEl.appendChild(script1);
+
+  // Nifty analysis
+  const nEl = document.getElementById('tv_analysis_nifty');
+  nEl.style.height = '450px';
+  const script2 = document.createElement('script');
+  script2.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
+  script2.async = true;
+  script2.textContent = JSON.stringify({
+    interval: '1m', width: '100%', isTransparent: true,
+    height: 450, symbol: 'NSE:NIFTY',
+    showIntervalTabs: true, locale: 'en',
+    colorTheme: isDark ? 'dark' : 'light'
+  });
+  nEl.appendChild(script2);
+}
+
+// ====== ALERT TOGGLE ======
+function toggleAlert() {
+  alertEnabled = !alertEnabled;
+  const btn = document.getElementById('alertToggle');
+  btn.classList.toggle('on', alertEnabled);
+  if (alertEnabled && 'Notification' in window) {
+    Notification.requestPermission();
+  }
+}
+
+// ====== PWA INSTALL ======
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('installBanner').style.display = 'none';
+    });
+  }
+}
+
+// ====== SERVICE WORKER ======
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Register inline SW
+    const swCode = `
+      const CACHE = 'marketx-v1';
+      self.addEventListener('install', e => {
+        e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])));
+      });
+      self.addEventListener('fetch', e => {
+        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+      });
+    `;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl);
+  });
+}
+
+// ====== INIT ======
+updateMarketTimer();
+setInterval(updateMarketTimer, 1000);
+
+// Generate initial signal
+generateSignal();
+
+// Auto refresh signals based on timeframe
+function startAutoRefresh() {
+  const interval = parseInt(currentTF) * 60 * 1000; // TF in ms
+  setTimeout(() => {
+    generateSignal();
+    startAutoRefresh();
+  }, interval);
+}
+
+// Also refresh every 30 seconds for demo
+setInterval(generateSignal, 30000);
+
+// Request notification permission
+if ('Notification' in window) {
+  Notification.requestPermission();
+}
+</script>
+</body>
+</html>
